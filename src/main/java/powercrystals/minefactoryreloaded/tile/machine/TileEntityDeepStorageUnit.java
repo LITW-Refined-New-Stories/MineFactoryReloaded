@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import powercrystals.minefactoryreloaded.MineFactoryReloadedClient;
 import powercrystals.minefactoryreloaded.api.IDeepStorageUnit;
 import powercrystals.minefactoryreloaded.core.UtilInventory;
 import powercrystals.minefactoryreloaded.gui.client.GuiDeepStorageUnit;
@@ -32,11 +33,24 @@ public class TileEntityDeepStorageUnit extends TileEntityFactoryInventory implem
 	}
 
 	@Override
-	public void cofh_validate() {
+	public void markDirty() {
+		// TileEntityBase
+		inWorld = true;
 
-		super.cofh_validate();
+		// TileEntityFactory
+		onRotate();
+		if (worldObj.isRemote && hasHAM()) {
+			MineFactoryReloadedClient.addTileToAreaList(this);
+		}
+
+		// TileEntityFactoryInventory
+		client = worldObj.isRemote;
+
+		// TileEntityDeepStorageUnit
 		_ignoreChanges = false;
 		onFactoryInventoryChanged();
+
+		super.markDirty();
 	}
 
 	@Override
